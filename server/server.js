@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import  'dotenv/config';
 
 // Import routes
 import {AuthRoutes} from "./routes/auth.routes.js";
@@ -17,13 +17,10 @@ import {UserRoutes} from "./routes/user.routes.js";
 // Initialize express app
 const app = express();
 
-// Load environment variables
-dotenv.config();
-
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://mongodbcea:xe122m8QdHuyi3l1@cea.tetk7pb.mongodb.net")
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}`)
     .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err));
+    .catch(err => console.log(err))
 
 // Middleware
 app.use(bodyParser.json());
