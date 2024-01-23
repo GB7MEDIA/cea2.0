@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const chatMessagesSchema = new mongoose.Schema({
+const chatUsersSchema = new mongoose.Schema({
     chatId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -11,15 +11,11 @@ const chatMessagesSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    mediaUrl: {
-        type: String,
-        default: null
-    },
-    text: {
-        type: String,
-        required: true
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 
-export const chatMessagesModel = mongoose.model('ChatMessage', chatMessagesSchema);
+export const chatUsersModel = mongoose.model('ChatUser', chatUsersSchema);
 

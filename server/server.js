@@ -1,66 +1,65 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import helmet from "helmet";
-import mongoose from "mongoose";
-import  'dotenv/config';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import helmet from 'helmet';
+import 'dotenv/config';
+import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import winston from 'winston';
 
-// Import routes
-import {AuthRoutes} from "./routes/auth.routes.js";
-import {ChatRoutes} from "./routes/chat.routes.js";
-import {MieterRoutes} from "./routes/mieter.routes.js";
-import {ObjektRoutes} from "./routes/objekt.routes.js";
-import {SchädenRoutes} from "./routes/schäden.routes.js";
-import {UserRoutes} from "./routes/user.routes.js";
+import routes from './routes/index.js';
+import connectDatabase from './config/database.js';
+import errorHandler from './middleware/errorHandler.js';
+import setupWebSocket from './config/socket.js';
 
-// Initialize express app
 const app = express();
 
-// Connect to MongoDB
-mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}`)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log(err))
+// Database Connection
+connectDatabase();
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors());
-app.use(helmet());
 
-// Use routes
-app.use('/api/auth', AuthRoutes);
-app.use('/api/chat', ChatRoutes);
-app.use('/api/mieter', MieterRoutes);
-app.use('/api/objekt', ObjektRoutes);
-app.use('/api/schäden', SchädenRoutes);
-app.use('/api/user', UserRoutes);
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || '*', // Replace '*' with your client's URL in production
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Helmet Configuration for Security
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:"],
+      },
+    },
+    frameguard: false,
+    hsts: false,
+  })
+);
 
-import http from 'http';
-import { Server } from 'socket.io';
+// Routes
+app.use('/api', routes);
+
+// Error Handling Middleware
+app.use(errorHandler);
 
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
+const io = new SocketIOServer(server, { cors: corsOptions });
+
+// Setup WebSocket
+setupWebSocket(io);
+
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+  winston.info(`Server running on port ${PORT}`);
 });
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
-});
-
-server.listen(3001, () => {
-    console.log('Socket.io server running on port 3001');
-});

@@ -1,16 +1,20 @@
 {
   "name": "server",
   "version": "0.0.1",
+  "description": "A Node.js server for the backend of a customer experience app.",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev-start": "nodemon server.js"
+    "dev-start": "nodemon server.js",
+    "lint": "eslint '**/*.js'"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   },
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -21,12 +25,15 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
     "nodemailer": "^6.9.8",
+    "prettier": "^3.2.4",
     "rate-limiter-flexible": "^4.0.0",
     "socket.io": "^4.7.3",
     "twilio": "^5.0.0-rc.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
-  }
+  },
+  "author": "Grispin Bauknecht"
 }

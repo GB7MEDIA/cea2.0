@@ -1,0 +1,6 @@
+export { LoginController, RegisterController, ForgotPasswordController, NewPasswordController, ActivateAccountController, TwoFactorAuthenticationController } from './auth.controller.js';
+export { GetAllUsersController, GetUserByIdController, CreateUserController, EditUserByIdController, DeleteUserByIdController } from './user.controller.js';
+export { GetAllMieterController, GetMieterByIdController, CreateMieterController, EditMieterByIdController, DeleteMieterByIdController } from './mieter.controller.js';
+export { GetAllObjekteController, GetObjektByIdController, CreateObjektController, EditObjektByIdController, DeleteObjektByIdController } from './objekt.controller.js';
+export { GetAllSchadenController, GetSchadenByIdController, CreateSchadenController, EditSchadenByIdController, DeleteSchadenByIdController } from './schaden.controller.js';
+export { GetAllChatsController, GetChatByIdController, CreateChatController, EditChatByIdController, DeleteChatByIdController } from './chat.controller.js';

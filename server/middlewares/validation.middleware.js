@@ -1,38 +1,130 @@
-import {body, validationResult} from "express-validator";
+import { body, param, validationResult } from 'express-validator';
+
+const ERROR_MESSAGES = {
+    EMAIL_INVALID: 'Invalid email address. Please use a valid email.',
+    PASSWORD_INVALID: 'Invalid password. Please use a valid password.',
+    NAME_REQUIRED: 'Name is required. Please provide a valid name.',
+    PHONE_INVALID: 'Invalid phone number. Please provide a valid phone number.',
+    PASSWORD_LENGTH: 'Password must be at least 8 characters long.',
+    PASSWORD_DIGIT: 'Password must contain at least one digit.',
+    PASSWORD_LETTER: 'Password must contain at least one letter.',
+    NEW_PASSWORD_CODE_REQUIRED: 'New password code is required.',
+    USER_ID_REQUIRED: 'User ID is required.',
+    ACTIVATE_ACCOUNT_CODE_REQUIRED: 'Activate account code is required.',
+    TFA_CODE_REQUIRED: 'Two Factor Authentication code is required.',
+    ROLE_REQUIRED: 'Role is required.',
+    ACTIVE_REQUIRED: 'Active is required.',
+    TFA_SETTING_REQUIRED: 'Two Factor Authentiction is required.'
+};
 
 export const validateLogin = [
-    body('email').isEmail().withMessage('Die E-Mail ist nicht gültig! Bitte versuchen sie es erneut mit einer gültigen E-Mail.'),
-    body('password').notEmpty().withMessage('Das Passwort ist nicht gültig! Bitte versuchen sie es erneut mit einem gültigen Passwort.')
-];
-
-export const validateRegister = [
-    body('name').isEmpty().withMessage('Das Feld Name darf nicht ausgelassen werden! Bitte versuchen Sie es erneut mit einem Namen.'),
-    body('email').isEmail().withMessage('Die E-Mail ist nicht gültig! Bitte versuchen sie es erneut mit einer gültigen E-Mail.'),
-    body('phonenumber').isMobilePhone('any', {strictMode: false}).withMessage('Die Telefonnummer ist nicht gültig! Bitte versuchen sie es erneut mit einer Gültigen Telefonnummer.'),
+    body('email')
+      .isEmail()
+      .withMessage(ERROR_MESSAGES.EMAIL_INVALID),
     body('password')
-    .isLength({ min: 8 }).withMessage('Das Passwort muss mindestens 8 Zeichen lang sein!')
-    .matches(/\d/).withMessage('Das Passwort muss mindestens eine Zahl beinhalten!')
-    .matches(/[a-zA-Z]/).withMessage('Das Passwort muss mindestens einen Buchstaben enthalten!')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.PASSWORD_INVALID),
 ];
-
+  
+export const validateRegister = [
+    body('name')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.NAME_REQUIRED),
+    body('email')
+      .isEmail()
+      .withMessage(ERROR_MESSAGES.EMAIL_INVALID),
+    body('phonenumber')
+      .isMobilePhone('any', { strictMode: false })
+      .withMessage(ERROR_MESSAGES.PHONE_INVALID),
+    body('password')
+      .isLength({ min: 8 })
+      .withMessage(ERROR_MESSAGES.PASSWORD_LENGTH)
+      .matches(/\d/)
+      .withMessage(ERROR_MESSAGES.PASSWORD_DIGIT)
+      .matches(/[a-zA-Z]/)
+      .withMessage(ERROR_MESSAGES.PASSWORD_LETTER),
+];
+  
 export const validateForgotPassword = [
-    body('email').isEmail().withMessage('Die E-Mail ist nicht gültig! Bitte versuchen sie es erneut mit einer gültigen E-Mail.')
+    body('email')
+      .isEmail()
+      .withMessage(ERROR_MESSAGES.EMAIL_INVALID),
 ];
-
+  
 export const validateNewPassword = [
-    body('newpasswordcode').isEmpty().withMessage('Der New Passwort Code darf nicht ausgelassen werden! Bitte versuchen Sie es erneut mit einem gültigem New Passwort Code.'),
+    body('newpasswordcode')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.NEW_PASSWORD_CODE_REQUIRED),
+    body('user_id')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.USER_ID_REQUIRED),
     body('newpassword')
-    .isLength({ min: 8 }).withMessage('Das Passwort muss mindestens 8 Zeichen lang sein!')
-    .matches(/\d/).withMessage('Das Passwort muss mindestens eine Zahl beinhalten!')
-    .matches(/[a-zA-Z]/).withMessage('Das Passwort muss mindestens einen Buchstaben enthalten!')
+      .isLength({ min: 8 })
+      .withMessage(ERROR_MESSAGES.PASSWORD_LENGTH)
+      .matches(/\d/)
+      .withMessage(ERROR_MESSAGES.PASSWORD_DIGIT)
+      .matches(/[a-zA-Z]/)
+      .withMessage(ERROR_MESSAGES.PASSWORD_LETTER),
 ];
 
-// andere validate Functions ...
+export const validateActivateAccount = [
+  body('user_id').notEmpty().withMessage(ERROR_MESSAGES.USER_ID_REQUIRED),
+  body('activateaccountcode').notEmpty.withMessage(ERROR_MESSAGES.ACTIVATE_ACCOUNT_CODE_REQUIRED)
+];
 
+export const validateTwoFactorAuthentication = [
+  body('user_id').notEmpty().withMessage(ERROR_MESSAGES.USER_ID_REQUIRED),
+  body('tfa_code').notEmpty().withMessage(ERROR_MESSAGES.TFA_CODE_REQUIRED)
+];
+
+export const validateCreateUser = [
+  body('name')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.NAME_REQUIRED),
+    body('email')
+      .isEmail()
+      .withMessage(ERROR_MESSAGES.EMAIL_INVALID),
+    body('phonenumber')
+      .isMobilePhone('any', { strictMode: false })
+      .withMessage(ERROR_MESSAGES.PHONE_INVALID),
+    body('password')
+      .isLength({ min: 8 })
+      .withMessage(ERROR_MESSAGES.PASSWORD_LENGTH)
+      .matches(/\d/)
+      .withMessage(ERROR_MESSAGES.PASSWORD_DIGIT)
+      .matches(/[a-zA-Z]/)
+      .withMessage(ERROR_MESSAGES.PASSWORD_LETTER),
+];
+
+export const validateEditUserById = [
+  param('user_id').notEmpty().withMessage(ERROR_MESSAGES.USER_ID_REQUIRED),
+  body('name')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.NAME_REQUIRED),
+    body('email')
+      .isEmail()
+      .withMessage(ERROR_MESSAGES.EMAIL_INVALID),
+    body('phonenumber')
+      .isMobilePhone('any', { strictMode: false })
+      .withMessage(ERROR_MESSAGES.PHONE_INVALID),
+    body('role')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.ROLE_REQUIRED),
+    body('active')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.ACTIVE_REQUIRED),
+    body('tfa_setting')
+      .notEmpty()
+      .withMessage(ERROR_MESSAGES.TFA_SETTING_REQUIRED),
+];
+  
+// Similar modules for other validation types...
+  
 export const checkValidationResult = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ error: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
     next();
-}
+};
+  
